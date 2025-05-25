@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Marvel Quiz</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #99ccff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  #quiz-container {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    width: 400px;
+  }
+  h2 {
+    margin-bottom: 20px;
+  }
+  .option {
+    background: #e4e6f1;
+    margin: 8px 0;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .option:hover {
+    background: #d0d3f8;
+  }
+  .correct {
+    background-color: #a0e7a0 !important;
+  }
+  .incorrect {
+    background-color: #f7a0a0 !important;
+  }
+  #next-btn {
+    margin-top: 20px;
+    padding: 10px 15px;
+    border: none;
+    background: #4caf50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #next-btn:disabled {
+    background: #9e9e9e;
+    cursor: not-allowed;
+  }
+  #score {
+    font-size: 18px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div id="quiz-container">
+    <h2 id="question">Question text</h2>
+    <div id="options">
+      <!-- Options will be inserted here -->
+    </div>
+    <button id="next-btn" disabled>Next</button>
+    <div id="score" style="display:none;"></div>
+  </div>
+
+<script>
+  const quizData = [
+    {
+      question: "What is spider-man's real name?",
+      options: ["Tony Stark", "Peter Parker", "Steve Rogers", "Bruce Banner"],
+      answer: 1
+    },
+    {
+      question: "Who is the god of thunder?",
+      options: ["Thor", "Loki", "Thanos", "Eros"],
+      answer: 0
+    },
+    {
+      question: "Which year did Avengers: Endgame come out?",
+      options: ["2019", "2020", "2021", "2022"],
+      answer: 0
+    },
+    {
+      question: "Where is Captain America from",
+      options: ["Queens", "Brooklyn", "Boston", "Florida"],
+      answer: 1
+    }
+  ];
+
+  const questionEl = document.getElementById('question');
+  const optionsEl = document.getElementById('options');
+  const nextBtn = document.getElementById('next-btn');
+  const scoreEl = document.getElementById('score');
+
+  let currentQuestion = 0;
+  let score = 0;
+  let answered = false;
+
+  function loadQuestion() {
+    answered = false;
+    nextBtn.disabled = true;
+    const current = quizData[currentQuestion];
+    questionEl.textContent = current.question;
+    optionsEl.innerHTML = '';
+
+    current.options.forEach((option, index) => {
+      const div = document.createElement('div');
+      div.classList.add('option');
+      div.textContent = option;
+      div.addEventListener('click', () => selectOption(index));
+      optionsEl.appendChild(div);
+    });
+  }
+
+  function selectOption(selectedIndex) {
+    if (answered) return;
+    answered = true;
+    nextBtn.disabled = false;
+
+    const correctIndex = quizData[currentQuestion].answer;
+    const options = optionsEl.querySelectorAll('.option');
+
+    options.forEach((optionEl, idx) => {
+      if (idx === correctIndex) {
+        optionEl.classList.add('correct');
+      }
+      if (idx === selectedIndex && selectedIndex !== correctIndex) {
+        optionEl.classList.add('incorrect');
+      }
+      optionEl.style.pointerEvents = 'none'; // disable further clicks
+    });
+
+    if (selectedIndex === correctIndex) {
+      score++;
+    }
+  }
+
+  nextBtn.addEventListener('click', () => {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+      loadQuestion();
+    } else {
+      showScore();
+    }
+  });
+
+  function showScore() {
+    questionEl.style.display = 'none';
+    optionsEl.style.display = 'none';
+    nextBtn.style.display = 'none';
+    scoreEl.style.display = 'block';
+    scoreEl.textContent = `You scored ${score} out of ${quizData.length}!`;
+  }
+
+  loadQuestion();
+</script>
+</body>
+</html>
